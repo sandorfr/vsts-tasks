@@ -46,9 +46,11 @@ $(agent.builddirectory)/out/pkg?(2|1).zip
 
 Before writing a task, consider simply customizing your build using the script running tasks such as PowerShell or shell scripts.  That is often the most appropriate path.
 
-Tasks are simply tool runners.  They know how to run MSBuild, VSTest, etc... in a first class way and handle return codes, how to treat std/err out, and how to write timeline records based on expected output.  They also get access to credentials to write back to VSO/TFS. 
+Tasks are simply tool runners.  They know how to run MSBuild, VSTest, etc... in a first class way and handle return codes, how to treat std err/out, and how to write timeline records based on expected output.  They also get access to credentials to write back to VSTS/TFS.
 
-For uploading custom tasks to VSO use the [TFS Cross Platform Command Line utility](https://github.com/Microsoft/tfs-cli).
+For uploading custom tasks to VSTS, use the [TFS Cross Platform Command Line utility](https://github.com/Microsoft/tfs-cli).
+
+For writing custom tasks, see the [samples within this repo](Tasks) and see the [task lib repo](https://github.com/Microsoft/vsts-task-lib).
 
 ## Contributing
 We take contributions.  [Read here](docs/contribute.md) how to contribute.
