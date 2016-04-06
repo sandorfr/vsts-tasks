@@ -1,0 +1,50 @@
+{
+  "id": "5e1e3830-fbfb-11e5-aab1-090c92bc4988",
+  "name": "ExtractFiles",
+  "friendlyName": "ms-resource:loc.friendlyName",
+  "description": "ms-resource:loc.description",
+  "author": "Batman",
+  "helpMarkDown": "ms-resource:loc.helpMarkDown",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "demands": [],
+  "version": {
+    "Major": "0",
+    "Minor": "1",
+    "Patch": "0"
+  },
+  "minimumAgentVersion": "1.83.0",
+  "instanceNameFormat": "ms-resource:loc.instanceNameFormat",
+  "inputs": [
+    {
+      "name": "cwd",
+      "type": "filePath",
+      "label": "ms-resource:loc.input.label.cwd",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "ms-resource:loc.input.help.cwd"
+    },
+    {
+      "name": "msg",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.msg",
+      "defaultValue": "Hello World",
+      "required": true,
+      "helpMarkDown": "ms-resource:loc.input.help.msg"
+    }
+  ],
+  "execution": {
+    "Node": {
+      "target": "sample.js",
+      "argumentFormat": ""
+    },
+    "PowerShell": {
+      "target": "$(currentDirectory)\\sample.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}

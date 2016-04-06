@@ -1,0 +1,10 @@
+{
+  "loc.friendlyName": "Extract Files",
+  "loc.helpMarkDown": "Replace with markdown to show in help",
+  "loc.description": "Extract files from a variety of archive types, e.g. .zip, .tar, .7z",
+  "loc.instanceNameFormat": "ExtractFiles $(message)",
+  "loc.input.label.cwd": "Working Directory",
+  "loc.input.help.cwd": "Current working directory when ExtractFiles is run.",
+  "loc.input.label.msg": "Message",
+  "loc.input.help.msg": "Message to echo out"
+}
