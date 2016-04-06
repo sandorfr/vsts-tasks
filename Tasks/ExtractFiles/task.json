@@ -14,42 +14,42 @@
   "version": {
     "Major": "0",
     "Minor": "1",
-    "Patch": "2"
+    "Patch": "3"
   },
   "minimumAgentVersion": "1.83.0",
-  "instanceNameFormat": "ExtractFiles $(message)",
+  "instanceNameFormat": "Extract Files $(message)",
   "inputs": [
     {
-      "name": "rootDir",
-      "type": "string",
-      "label": "Root Directory",
+      "name": "SourceFolder",
+      "type": "filePath",
+      "label": "Source Folder",
       "defaultValue": "$(Agent.BuildDirectory)",
       "required": true,
-      "helpMarkDown": "Root directory under which the TAR file name or pattern will be matched."
+      "helpMarkDown": "Source folder containing archives files to extract."
     },
     {
-      "name": "tarFilePattern",
+      "name": "filePattern",
       "type": "string",
-      "label": "TAR File Name or Pattern",
-      "defaultValue": "*.tar",
+      "label": "Archive file name or pattern",
+      "defaultValue": "*.zip",
       "required": true,
-      "helpMarkDown": "Name or pattern of the TAR files to extract. Supports a minimatch pattern. [More Information](http://go.microsoft.com/fwlink/?LinkID=708389)"
+      "helpMarkDown": "Name or pattern of the archive files to extract.  Supports a minimatch pattern. [More Information](http://go.microsoft.com/fwlink/?LinkID=708389)"
     },
     {
-      "name": "targetDir",
+      "name": "TargetFolder",
       "type": "string",
-      "label": "Target Directory",
+      "label": "Target Folder",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "Directory in which TAR contents should be extracted."
+      "helpMarkDown": "Target folder to extract into."
     },
     {
-      "name": "cleanTargetDir",
+      "name": "CleanTargetFolder",
       "type": "boolean",
-      "label": "Clean Target Directory Before Extracting",
+      "label": "Clean target folder before extracting",
       "required": true,
       "defaultValue": "true",
-      "helpMarkDown": "Select this option to clean the target directory before TAR contents are extracted into it."
+      "helpMarkDown": "Select this option to clean the target directory before archive contents are extracted into it."
     }
   ],  "execution": {
     "Node": {

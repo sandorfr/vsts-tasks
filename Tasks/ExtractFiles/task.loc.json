@@ -14,42 +14,42 @@
   "version": {
     "Major": "0",
     "Minor": "1",
-    "Patch": "2"
+    "Patch": "3"
   },
   "minimumAgentVersion": "1.83.0",
   "instanceNameFormat": "ms-resource:loc.instanceNameFormat",
   "inputs": [
     {
-      "name": "rootDir",
-      "type": "string",
-      "label": "ms-resource:loc.input.label.rootDir",
+      "name": "SourceFolder",
+      "type": "filePath",
+      "label": "ms-resource:loc.input.label.SourceFolder",
       "defaultValue": "$(Agent.BuildDirectory)",
       "required": true,
-      "helpMarkDown": "ms-resource:loc.input.help.rootDir"
+      "helpMarkDown": "ms-resource:loc.input.help.SourceFolder"
     },
     {
-      "name": "tarFilePattern",
+      "name": "filePattern",
       "type": "string",
-      "label": "ms-resource:loc.input.label.tarFilePattern",
-      "defaultValue": "*.tar",
+      "label": "ms-resource:loc.input.label.filePattern",
+      "defaultValue": "*.zip",
       "required": true,
-      "helpMarkDown": "ms-resource:loc.input.help.tarFilePattern"
+      "helpMarkDown": "ms-resource:loc.input.help.filePattern"
     },
     {
-      "name": "targetDir",
+      "name": "TargetFolder",
       "type": "string",
-      "label": "ms-resource:loc.input.label.targetDir",
+      "label": "ms-resource:loc.input.label.TargetFolder",
       "defaultValue": "",
       "required": true,
-      "helpMarkDown": "ms-resource:loc.input.help.targetDir"
+      "helpMarkDown": "ms-resource:loc.input.help.TargetFolder"
     },
     {
-      "name": "cleanTargetDir",
+      "name": "CleanTargetFolder",
       "type": "boolean",
-      "label": "ms-resource:loc.input.label.cleanTargetDir",
+      "label": "ms-resource:loc.input.label.CleanTargetFolder",
       "required": true,
       "defaultValue": "true",
-      "helpMarkDown": "ms-resource:loc.input.help.cleanTargetDir"
+      "helpMarkDown": "ms-resource:loc.input.help.CleanTargetFolder"
     }
   ],
   "execution": {

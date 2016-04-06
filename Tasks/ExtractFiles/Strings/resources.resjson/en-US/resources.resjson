@@ -2,13 +2,13 @@
   "loc.friendlyName": "Extract Files",
   "loc.helpMarkDown": "Replace with markdown to show in help",
   "loc.description": "Extract files from a variety of archive types, e.g. .zip, .tar, .7z",
-  "loc.instanceNameFormat": "ExtractFiles $(message)",
-  "loc.input.label.rootDir": "Root Directory",
-  "loc.input.help.rootDir": "Root directory under which the TAR file name or pattern will be matched.",
-  "loc.input.label.tarFilePattern": "TAR File Name or Pattern",
-  "loc.input.help.tarFilePattern": "Name or pattern of the TAR files to extract. Supports a minimatch pattern. [More Information](http://go.microsoft.com/fwlink/?LinkID=708389)",
-  "loc.input.label.targetDir": "Target Directory",
-  "loc.input.help.targetDir": "Directory in which TAR contents should be extracted.",
-  "loc.input.label.cleanTargetDir": "Clean Target Directory Before Extracting",
-  "loc.input.help.cleanTargetDir": "Select this option to clean the target directory before TAR contents are extracted into it."
+  "loc.instanceNameFormat": "Extract Files $(message)",
+  "loc.input.label.SourceFolder": "Source Folder",
+  "loc.input.help.SourceFolder": "Source folder containing archives files to extract.",
+  "loc.input.label.filePattern": "Archive file name or pattern",
+  "loc.input.help.filePattern": "Name or pattern of the archive files to extract.  Supports a minimatch pattern. [More Information](http://go.microsoft.com/fwlink/?LinkID=708389)",
+  "loc.input.label.TargetFolder": "Target Folder",
+  "loc.input.help.TargetFolder": "Target folder to extract into.",
+  "loc.input.label.CleanTargetFolder": "Clean target folder before extracting",
+  "loc.input.help.CleanTargetFolder": "Select this option to clean the target directory before archive contents are extracted into it."
 }
