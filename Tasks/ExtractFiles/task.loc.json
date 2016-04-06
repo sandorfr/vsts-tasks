@@ -14,26 +14,42 @@
   "version": {
     "Major": "0",
     "Minor": "1",
-    "Patch": "0"
+    "Patch": "2"
   },
   "minimumAgentVersion": "1.83.0",
   "instanceNameFormat": "ms-resource:loc.instanceNameFormat",
   "inputs": [
     {
-      "name": "cwd",
-      "type": "filePath",
-      "label": "ms-resource:loc.input.label.cwd",
-      "defaultValue": "",
-      "required": false,
-      "helpMarkDown": "ms-resource:loc.input.help.cwd"
+      "name": "rootDir",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.rootDir",
+      "defaultValue": "$(Agent.BuildDirectory)",
+      "required": true,
+      "helpMarkDown": "ms-resource:loc.input.help.rootDir"
     },
     {
-      "name": "msg",
+      "name": "tarFilePattern",
       "type": "string",
-      "label": "ms-resource:loc.input.label.msg",
-      "defaultValue": "Hello World",
+      "label": "ms-resource:loc.input.label.tarFilePattern",
+      "defaultValue": "*.tar",
       "required": true,
-      "helpMarkDown": "ms-resource:loc.input.help.msg"
+      "helpMarkDown": "ms-resource:loc.input.help.tarFilePattern"
+    },
+    {
+      "name": "targetDir",
+      "type": "string",
+      "label": "ms-resource:loc.input.label.targetDir",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "ms-resource:loc.input.help.targetDir"
+    },
+    {
+      "name": "cleanTargetDir",
+      "type": "boolean",
+      "label": "ms-resource:loc.input.label.cleanTargetDir",
+      "required": true,
+      "defaultValue": "true",
+      "helpMarkDown": "ms-resource:loc.input.help.cleanTargetDir"
     }
   ],
   "execution": {

@@ -14,29 +14,44 @@
   "version": {
     "Major": "0",
     "Minor": "1",
-    "Patch": "0"
+    "Patch": "2"
   },
   "minimumAgentVersion": "1.83.0",
   "instanceNameFormat": "ExtractFiles $(message)",
   "inputs": [
     {
-      "name": "cwd",
-      "type": "filePath",
-      "label": "Working Directory",
-      "defaultValue": "",
-      "required": false,
-      "helpMarkDown": "Current working directory when ExtractFiles is run."
+      "name": "rootDir",
+      "type": "string",
+      "label": "Root Directory",
+      "defaultValue": "$(Agent.BuildDirectory)",
+      "required": true,
+      "helpMarkDown": "Root directory under which the TAR file name or pattern will be matched."
     },
     {
-      "name": "msg",
+      "name": "tarFilePattern",
       "type": "string",
-      "label": "Message",
-      "defaultValue": "Hello World",
+      "label": "TAR File Name or Pattern",
+      "defaultValue": "*.tar",
       "required": true,
-      "helpMarkDown": "Message to echo out"
+      "helpMarkDown": "Name or pattern of the TAR files to extract. Supports a minimatch pattern. [More Information](http://go.microsoft.com/fwlink/?LinkID=708389)"
+    },
+    {
+      "name": "targetDir",
+      "type": "string",
+      "label": "Target Directory",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Directory in which TAR contents should be extracted."
+    },
+    {
+      "name": "cleanTargetDir",
+      "type": "boolean",
+      "label": "Clean Target Directory Before Extracting",
+      "required": true,
+      "defaultValue": "true",
+      "helpMarkDown": "Select this option to clean the target directory before TAR contents are extracted into it."
     }
-  ],
-  "execution": {
+  ],  "execution": {
     "Node": {
       "target": "sample.js",
       "argumentFormat": ""
