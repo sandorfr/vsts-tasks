@@ -14,7 +14,7 @@
   "version": {
     "Major": "0",
     "Minor": "1",
-    "Patch": "3"
+    "Patch": "12"
   },
   "minimumAgentVersion": "1.83.0",
   "instanceNameFormat": "Extract Files $(message)",
@@ -28,7 +28,7 @@
       "helpMarkDown": "Source folder containing archives files to extract."
     },
     {
-      "name": "filePattern",
+      "name": "FilePattern",
       "type": "string",
       "label": "Archive file name or pattern",
       "defaultValue": "*.zip",
@@ -50,10 +50,18 @@
       "required": true,
       "defaultValue": "true",
       "helpMarkDown": "Select this option to clean the target directory before archive contents are extracted into it."
+    },
+    {
+      "name": "FailOnExtractionError",
+      "type": "boolean",
+      "label": "Fail on Extraction Error",
+      "defaultValue": "true",
+      "required": false,
+      "helpMarkDown": "If this is true, this task will fail if any file fails to extract properly."
     }
   ],  "execution": {
     "Node": {
-      "target": "sample.js",
+      "target": "extractFiles.js",
       "argumentFormat": ""
     },
     "PowerShell": {

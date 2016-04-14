@@ -5,10 +5,12 @@
   "loc.instanceNameFormat": "Extract Files $(message)",
   "loc.input.label.SourceFolder": "Source Folder",
   "loc.input.help.SourceFolder": "Source folder containing archives files to extract.",
-  "loc.input.label.filePattern": "Archive file name or pattern",
-  "loc.input.help.filePattern": "Name or pattern of the archive files to extract.  Supports a minimatch pattern. [More Information](http://go.microsoft.com/fwlink/?LinkID=708389)",
+  "loc.input.label.FilePattern": "Archive file name or pattern",
+  "loc.input.help.FilePattern": "Name or pattern of the archive files to extract.  Supports a minimatch pattern. [More Information](http://go.microsoft.com/fwlink/?LinkID=708389)",
   "loc.input.label.TargetFolder": "Target Folder",
   "loc.input.help.TargetFolder": "Target folder to extract into.",
   "loc.input.label.CleanTargetFolder": "Clean target folder before extracting",
-  "loc.input.help.CleanTargetFolder": "Select this option to clean the target directory before archive contents are extracted into it."
+  "loc.input.help.CleanTargetFolder": "Select this option to clean the target directory before archive contents are extracted into it.",
+  "loc.input.label.FailOnExtractionError": "Fail on Extraction Error",
+  "loc.input.help.FailOnExtractionError": "If this is true, this task will fail if any file fails to extract properly."
 }
