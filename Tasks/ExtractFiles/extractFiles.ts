@@ -5,6 +5,25 @@ import os = require('os');
 
 import tl = require('vsts-task-lib/task');
 
+var win = os.type().match(/^Win/);
+var sourceFolder = tl.getPathInput('SourceFolder', true, true);
+var filePattern = tl.getInput('FilePattern', true);
+var targetFolder = tl.getPathInput('TargetFolder', true, false);
+var cleanTargetFolder = tl.getBoolInput('CleanTargetFolder', false);
+var failOnExtractionError = tl.getBoolInput('FailOnExtractionError', true);
+
+// extractors
+var tarLocation;
+var sevenZipLocation;
+
+if (win) {
+    // http://www.7-zip.org/
+    sevenZipLocation = '7zip/7z.exe';
+} else {
+    // https://sourceforge.net/projects/p7zip/
+    sevenZipLocation = 'p7zip/7z';
+}
+
 function findFiles(sourceFolder, filePattern) {
     'use strict';
 
@@ -32,13 +51,6 @@ function findFiles(sourceFolder, filePattern) {
 
     return matchingFiles;
 }
-
-var win = os.type().match(/^Win/);
-var sourceFolder = tl.getPathInput('SourceFolder', true, true);
-var filePattern = tl.getInput('FilePattern', true);
-var targetFolder = tl.getPathInput('TargetFolder', true, false);
-var cleanTargetFolder = tl.getBoolInput('CleanTargetFolder', false);
-var failOnExtractionError = tl.getBoolInput('FailOnExtractionError', true);
 
 // Find matching archive files
 var files = findFiles(sourceFolder, filePattern);
@@ -76,13 +88,6 @@ function isTar(file) {
         || name.endsWith('.tar.lzo')  // lzop
         || name.endsWith('.tar.xz')   // xz
         || name.endsWith('.txz');     // xz
-}
-function isZip(file) {
-    var name = win ? file.toLowerCase() : file;
-    return name.endsWith('.zip')
-        || name.endsWith('.jar')
-        || name.endsWith('.war')
-        || name.endsWith('.ear');
 }
 
 function sevenZipExtract(file, targetFolder) {
@@ -124,11 +129,9 @@ function failedToExtract(message) {
     }
 }
 
-// extractors
-var tarLocation;
-var sevenZipLocation = tl.which('7z', false); // TODO load from bundled location
-// Extract the archive files
-
+// Extract the archive files on a single thread for two reasons:
+// 1 - Multiple threads munge the log messages
+// 2 - Everything is going to be blocked by I/O anyway.
 for (var i = 0; i < files.length; i++) {
     var file = files[i];
     if (!fs.existsSync(file)) {
