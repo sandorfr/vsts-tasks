@@ -14,7 +14,7 @@
   "version": {
     "Major": "0",
     "Minor": "1",
-    "Patch": "18"
+    "Patch": "20"
   },
   "minimumAgentVersion": "1.83.0",
   "instanceNameFormat": "ms-resource:loc.instanceNameFormat",
@@ -37,7 +37,7 @@
     },
     {
       "name": "TargetFolder",
-      "type": "string",
+      "type": "filePath",
       "label": "ms-resource:loc.input.label.TargetFolder",
       "defaultValue": "",
       "required": true,
@@ -50,14 +50,6 @@
       "required": true,
       "defaultValue": "true",
       "helpMarkDown": "ms-resource:loc.input.help.CleanTargetFolder"
-    },
-    {
-      "name": "FailOnExtractionError",
-      "type": "boolean",
-      "label": "ms-resource:loc.input.label.FailOnExtractionError",
-      "defaultValue": "true",
-      "required": false,
-      "helpMarkDown": "ms-resource:loc.input.help.FailOnExtractionError"
     }
   ],
   "execution": {

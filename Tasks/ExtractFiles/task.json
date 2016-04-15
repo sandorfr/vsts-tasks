@@ -14,7 +14,7 @@
   "version": {
     "Major": "0",
     "Minor": "1",
-    "Patch": "18"
+    "Patch": "20"
   },
   "minimumAgentVersion": "1.83.0",
   "instanceNameFormat": "Extract Files $(message)",
@@ -37,7 +37,7 @@
     },
     {
       "name": "TargetFolder",
-      "type": "string",
+      "type": "filePath",
       "label": "Target Folder",
       "defaultValue": "",
       "required": true,
@@ -50,14 +50,6 @@
       "required": true,
       "defaultValue": "true",
       "helpMarkDown": "Select this option to clean the target directory before archive contents are extracted into it."
-    },
-    {
-      "name": "FailOnExtractionError",
-      "type": "boolean",
-      "label": "Fail on Extraction Error",
-      "defaultValue": "true",
-      "required": false,
-      "helpMarkDown": "If this is true, this task will fail if any file fails to extract properly."
     }
   ],  "execution": {
     "Node": {

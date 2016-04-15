@@ -111,22 +111,15 @@ function tarExtract(file, targetFolder) {
 
 function handleExecResult(execResult, file) {
     if (execResult.code == tl.TaskResult.Failed) {
-        extractionFailed = true;
         var message = 'Extraction failed for file: ' + file + ' with error message: ' + execResult.error;
-        failedToExtract(message);
+        failTask(message);
     }
     return execResult;
 }
 
-// set to true if any of the specified files can not be extracted for any reason
-var extractionFailed = false;
-
-function failedToExtract(message) {
+function failTask(message) {
     console.log(message);
-    extractionFailed = true;
-    if (failOnExtractionError) {
-        tl.setResult(tl.TaskResult.Failed, message);
-    }
+    tl.setResult(tl.TaskResult.Failed, message);
 }
 
 // Extract the archive files on a single thread for two reasons:
@@ -135,10 +128,10 @@ function failedToExtract(message) {
 for (var i = 0; i < files.length; i++) {
     var file = files[i];
     if (!fs.existsSync(file)) {
-        failedToExtract('Extraction failed for file: ' + file + ' because it does not exist.');
+        failTask('Extraction failed for file: ' + file + ' because it does not exist.');
     }
     else if (fs.lstatSync(file).isDirectory()) {
-        failedToExtract('Extraction failed for file: ' + file + ' because it is a directory.');
+        failTask('Extraction failed for file: ' + file + ' because it is a directory.');
     }
     else {
         if (isTar(file)) {
@@ -151,24 +144,20 @@ for (var i = 0; i < files.length; i++) {
                 var name = win ? file.toLowerCase() : file;
                 if (name.endsWith('.tar')) { // a simple tar
                     sevenZipExtract(file, targetFolder);
-                } else { // a compressed tar
+                } else { // a compressed tar, e.g. 'fullFilePath/test.tar.bz2'
+                    // 7zip can not decompress and expand in one step, so it is necessary
+                    // to do this in multiple steps as follows:
                     // 0. create a temporary location to decompress the tar to
-                    // 1. decompress the tar to a temporary location
-                    // 2. expand the tar to the output folder
+                    // 1. decompress the tar to the temporary location
+                    // 2. expand the decompressed tar to the output folder
                     // 3. remove the temporary location
 
-                    // 0
+                    // e.g. 'fullFilePath/test.tar.bz2' --> 'test.tar.bz2'
                     var shortFileName = file.substring(file.lastIndexOf('/') + 1, file.length);
-                    console.log('shortFileName=' + shortFileName);
-                    var shortTarName = shortFileName.substring(0, shortFileName.lastIndexOf('.'));
-                    if (!shortTarName.endsWith('.tar')) {
-                        shortTarName += '.tar';
-                    }
-                    console.log('shortTarName=' + shortTarName);
+                    // e.g. 'targetFolder/_test.tar.bz2_'
                     var tempFolder = targetFolder + '/_' + shortFileName + '_';
                     if (!tl.exist(tempFolder)) {
-                        console.log('Extracting file: ' + file);
-                        console.log('Creating temp folder: ' + tempFolder + ' to decompress: ' + shortFileName);
+                        console.log('Creating temp folder: ' + tempFolder + ' to decompress: ' + file);
                         // 0
                         tl.mkdirP(tempFolder);
                         // 1
@@ -184,7 +173,7 @@ for (var i = 0; i < files.length; i++) {
                         tl.rmRF(tempFolder, false);
                     }
                     else {
-                        console.log('Skipping: ' + file + ' because temporary location could not be created: ' + tempFolder);
+                        failTask('Extraction failed for file: ' + file + ' because temporary location could not be created: ' + tempFolder);
                     }
                 }
             }
@@ -194,12 +183,6 @@ for (var i = 0; i < files.length; i++) {
     }
 }
 
-if (extractionFailed) {
-    var message = 'Extraction failed for some files.  See console log for details.'
-    console.log(message);
-    tl.setResult(tl.TaskResult.Failed, message);
-} else {
-    var message = 'Successfully all files.';
-    console.log(message)
-    tl.setResult(tl.TaskResult.Succeeded, message);
-}
+var message = 'Successfully all files.';
+console.log(message)
+tl.setResult(tl.TaskResult.Succeeded, message);
