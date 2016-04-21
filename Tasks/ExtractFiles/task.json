@@ -1,0 +1,57 @@
+{
+  "id": "5e1e3830-fbfb-11e5-aab1-090c92bc4988",
+  "name": "ExtractFiles",
+  "friendlyName": "Extract Files",
+  "description": "Extract files from a variety of archive types, e.g. .zip, .tar, .7z",
+  "author": "Microsoft Corporation",
+  "helpMarkDown": "Replace with markdown to show in help",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "demands": [],
+  "version": {
+    "Major": "1",
+    "Minor": "0",
+    "Patch": "0"
+  },
+  "minimumAgentVersion": "1.98.1",
+  "instanceNameFormat": "Extract Files $(message)",
+  "inputs": [
+    {
+      "name": "pattern",
+      "type": "string",
+      "label": "Archive files pattern",
+      "defaultValue": "*.zip, *.tar",
+      "required": true,
+      "helpMarkDown": "Name or pattern of the archive files to extract.  Supports a minimatch pattern."
+    },
+    {
+      "name": "destinationFolder",
+      "type": "filePath",
+      "label": "Destination folder",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Destination folder to extract archives into."
+    },
+    {
+      "name": "cleanDestinationFolder",
+      "type": "boolean",
+      "label": "Clean destination folder before extracting",
+      "required": true,
+      "defaultValue": "true",
+      "helpMarkDown": "Select this option to clean the destination directory before archive contents are extracted into it."
+    }
+  ],  "execution": {
+    "Node": {
+      "target": "extractFiles.js",
+      "argumentFormat": ""
+    },
+    "PowerShell": {
+      "target": "$(currentDirectory)\\sample.ps1",
+      "argumentFormat": "",
+      "workingDirectory": "$(currentDirectory)"
+    }
+  }
+}
