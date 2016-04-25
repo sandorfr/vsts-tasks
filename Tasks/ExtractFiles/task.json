@@ -20,12 +20,12 @@
   "instanceNameFormat": "Extract Files $(message)",
   "inputs": [
     {
-      "name": "pattern",
-      "type": "string",
-      "label": "Archive files pattern",
-      "defaultValue": "*.zip, *.tar",
+      "name": "archiveFilePatterns",
+      "type": "multiLine",
+      "label": "Archive file patterns",
+      "defaultValue": "*.zip",
       "required": true,
-      "helpMarkDown": "Name or pattern of the archive files to extract.  Supports a minimatch pattern."
+      "helpMarkDown": "File paths or patterns of the archive files to extract. Supports multiple lines of minimatch patterns. [More Information](http://go.microsoft.com/fwlink/?LinkID=708389)"
     },
     {
       "name": "destinationFolder",

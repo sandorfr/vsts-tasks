@@ -5,10 +5,9 @@ import os = require('os');
 import path = require('path');
 import tl = require('vsts-task-lib/task');
 
-var pattern: string = tl.getInput('pattern', true).trim();
-
-var destinationFolder :string  = tl.getPathInput('destinationFolder', true, false).trim();
-
+// archiveFilePatterns is a multiline input containing glob patterns
+var archiveFilePatterns: string[] = tl.getDelimitedInput('archiveFilePatterns', '\n', true);
+var destinationFolder :string  = path.normalize(tl.getPathInput('destinationFolder', true, false).trim());
 var cleanDestinationFolder: boolean = tl.getBoolInput('cleanDestinationFolder', false);
 
 var repoRoot : string = path.resolve(tl.getVariable('build.sourcesDirectory') || '');
@@ -18,27 +17,25 @@ var win = os.type().match(/^Win/);
 tl.debug('win: ' + win);
 
 // extractors
-var tarLocation : string;
-var _sevenZipLocation : string; // lazily loaded, use accessor method
+var xpTarLocation : string;
+var xpUnzipLocation : string;
+// 7zip
+var xpSevenZipLocation: string;
+var winSevenZipLocation: string = '7zip/7z.exe';
 
-function getSevenZipLocation() {
-    if (_sevenZipLocation == undefined) {
-
-        if (win) {
-            // http://www.7-zip.org/
-            _sevenZipLocation = '7zip/7z.exe';
-        } else {
-            // https://sourceforge.net/projects/p7zip/
-            _sevenZipLocation = 'p7zip/7z';
-
+function getSevenZipLocation() : string {
+    if(win){
+        return winSevenZipLocation;
+    } else {
+        if (typeof xpTarLocation == "undefined") {
+            xpSevenZipLocation = tl.which('7z', true);
         }
+        return xpSevenZipLocation; 
     }
-    return _sevenZipLocation;
 }
 
-function findFiles(fullSearchString: string): string[] {
-    var patterns: string[] = splitPattern(fullSearchString);
-    tl.debug('using: ' + patterns.length + ' patterns: '+patterns +' to search for archives.');
+function findFiles(): string[] {
+    tl.debug('using: ' + archiveFilePatterns.length + ' archiveFilePatterns: '+archiveFilePatterns +' to search for archives.');
 
     // minimatch options
     var matchOptions = { matchBase: true };
@@ -50,10 +47,10 @@ function findFiles(fullSearchString: string): string[] {
     var Set = require('collections/set');
     var matchingFilesSet = new Set();
 
-    for (var i = 0; i < patterns.length; i++) {
-        tl.debug('searching for archives, pattern['+i+']: ' + patterns[i]);
+    for (var i = 0; i < archiveFilePatterns.length; i++) {
+        tl.debug('searching for archives, pattern['+i+']: ' + archiveFilePatterns[i]);
 
-        var normalizedPattern : string = path.normalize(patterns[i]);
+        var normalizedPattern : string = path.normalize(archiveFilePatterns[i]);
         tl.debug('normalizedPattern= ' + normalizedPattern);
 
         var parseResult = parsePattern(normalizedPattern);
@@ -153,40 +150,8 @@ function makeAbsolute(normalizedPath: string): string {
     return result;
 }
 
-/**
- * Splits on comma, semicolon, or colon on linux
- * @param pattern
- */
-function splitPattern(pattern: string) : string[] {
-    var result : string [] = [];
-    
-    var commaSplit : string [] = pattern.split(','); // split on comman
-    for (var i = 0; i < commaSplit.length; i++) {
-        var semiColonSplit : string [] = commaSplit[i].split(';'); // split on semicolon
-        for (var j = 0; j < semiColonSplit.length; j++) {
-            if (win) {
-                var subPattern: string = semiColonSplit[j].trim();
-                if (subPattern.length > 0) {
-                    result.push(subPattern);
-                }
-            } else { 
-                var colonSplit: string[] = semiColonSplit[j].split(':'); //also split on colon on linux
-                for (var k = 0; k < colonSplit.length; k++) {
-                    var subPattern: string = colonSplit[k].trim(); 
-                    if (subPattern.length > 0) {
-                        result.push(subPattern);
-                    }
-                }
-            }
-        }
-    }
-
-    return result;
-}
-
-
 // Find matching archive files
-var files: string [] = findFiles(pattern);
+var files: string [] = findFiles();
 console.log('Found: ' + files.length + ' files to extract:');
 for (var i = 0; i < files.length; i++) {
     console.log(files[i]);
@@ -202,6 +167,13 @@ if (cleanDestinationFolder && tl.exist(destinationFolder)) {
 if (!tl.exist(destinationFolder)) {
     console.log('Creating destination folder: ' + destinationFolder);
     tl.mkdirP(destinationFolder);
+}
+
+function isZip(file) {
+    return file.endsWith('.zip')
+        || file.endsWith('.jar')
+        || file.endsWith('.war')
+        || file.endsWith('.ear');
 }
 
 function isTar(file) {
@@ -227,10 +199,21 @@ function isTar(file) {
         || name.endsWith('.txz');     // xz
 }
 
+function unzipExtract(file, destinationFolder) {
+    console.log('Extracting file: ' + file);
+    if(typeof xpUnzipLocation == "undefined") {
+        xpUnzipLocation = tl.which('unzip', true);
+    }
+    var unzip = tl.createToolRunner(xpUnzipLocation);
+    unzip.arg(file);
+    unzip.arg('-d');
+    unzip.arg(destinationFolder);
+    return handleExecResult(unzip.execSync(), file);
+}
+
 function sevenZipExtract(file, destinationFolder) {
     console.log('Extracting file: ' + file);
     var sevenZip = tl.createToolRunner(getSevenZipLocation());
-    console.log('7z path=' + sevenZip.toolPath);
     sevenZip.arg('x');
     sevenZip.arg('-o' + destinationFolder);
     sevenZip.arg(file);
@@ -239,7 +222,10 @@ function sevenZipExtract(file, destinationFolder) {
 
 function tarExtract(file, destinationFolder) {
     console.log('Extracting file: ' + file);
-    var tar = tl.createToolRunner(tarLocation);
+    if (typeof xpTarLocation == "undefined") {
+        xpTarLocation = tl.which('tar', true);
+    }
+    var tar = tl.createToolRunner(xpTarLocation);
     tar.arg('-xvf'); // tar will correctly handle compression types outlined in isTar()
     tar.arg(file);
     tar.arg('-C');
@@ -269,49 +255,51 @@ for (var i = 0; i < files.length; i++) {
     else if (fs.lstatSync(file).isDirectory()) {
         failTask('Extraction failed for file: ' + file + ' because it is a directory.');
     }
-    else {
-        if (isTar(file)) {
-            if (typeof tarLocation == "undefined") {
-                tarLocation = tl.which('tar', false);
-            }
-            if (tarLocation != null) { // use native tar if available
-                tarExtract(file, destinationFolder);
-            } else { // native tar unavailable, use bundled 7-zip
-                var name = win ? file.toLowerCase() : file;
-                if (name.endsWith('.tar')) { // a simple tar
-                    sevenZipExtract(file, destinationFolder);
-                } else { // a compressed tar, e.g. 'fullFilePath/test.tar.bz2'
-                    // 7zip can not decompress and expand in one step, so it is necessary
-                    // to do this in multiple steps as follows:
-                    // 0. create a temporary location to decompress the tar to
-                    // 1. decompress the tar to the temporary location
-                    // 2. expand the decompressed tar to the output folder
-                    // 3. remove the temporary location
+    
+    
+    if(win) {
+        if(isTar(file)){
+            if (file.endsWith('.tar')) { // a simple tar
+                sevenZipExtract(file, destinationFolder);
+            } else { // a compressed tar, e.g. 'fullFilePath/test.tar.bz2'
+                // 7zip can not decompress and expand in one step, so it is necessary
+                // to do this in multiple steps as follows:
+                // 0. create a temporary location to decompress the tar to
+                // 1. decompress the tar to the temporary location
+                // 2. expand the decompressed tar to the output folder
+                // 3. remove the temporary location
 
-                    // e.g. 'fullFilePath/test.tar.bz2' --> 'test.tar.bz2'
-                    var shortFileName = file.substring(file.lastIndexOf(path.sep) +1, file.length);
-                    // e.g. 'destinationFolder/_test.tar.bz2_'
-                    var tempFolder = path.normalize(destinationFolder + path.sep + '_' + shortFileName + '_');
-                    if (!tl.exist(tempFolder)) {
-                        console.log('Creating temp folder: ' + tempFolder + ' to decompress: ' + file);
-                        // 0 create temp folder
-                        tl.mkdirP(tempFolder);
-                        // 1 extract compressed tar
-                        sevenZipExtract(file, tempFolder);
-                        var tempTar = tempFolder + path.sep + fs.readdirSync(tempFolder)[0]; // should be only one
-                        console.log('Decompressed temporary tar from: ' + file + ' to: ' + tempTar);
-                        // 2 expand extracted tar
-                        sevenZipExtract(tempTar, destinationFolder);
-                        // 3 cleanup temp folder
-                        console.log('Removing temp folder: ' + tempFolder);
-                        tl.rmRF(tempFolder, false);
-                    } else {
-                        failTask('Extraction failed for file: ' + file + ' because temporary location could not be created: ' + tempFolder);
-                    }
+                // e.g. 'fullFilePath/test.tar.bz2' --> 'test.tar.bz2'
+                var shortFileName = file.substring(file.lastIndexOf(path.sep) +1, file.length);
+                // e.g. 'destinationFolder/_test.tar.bz2_'
+                var tempFolder = path.normalize(destinationFolder + path.sep + '_' + shortFileName + '_');
+                if (!tl.exist(tempFolder)) {
+                    console.log('Creating temp folder: ' + tempFolder + ' to decompress: ' + file);
+                    // 0 create temp folder
+                    tl.mkdirP(tempFolder);
+                    // 1 extract compressed tar
+                    sevenZipExtract(file, tempFolder);
+                    var tempTar = tempFolder + path.sep + fs.readdirSync(tempFolder)[0]; // should be only one
+                    console.log('Decompressed temporary tar from: ' + file + ' to: ' + tempTar);
+                    // 2 expand extracted tar
+                    sevenZipExtract(tempTar, destinationFolder);
+                    // 3 cleanup temp folder
+                    console.log('Removing temp folder: ' + tempFolder);
+                    tl.rmRF(tempFolder, false);
+                } else {
+                    failTask('Extraction failed for file: ' + file + ' because temporary location could not be created: ' + tempFolder);
                 }
             }
         } else { // not a tar
             sevenZipExtract(file, destinationFolder);
+        }
+    } else { // not windows
+        if (isTar(file)) {
+            tarExtract(file, destinationFolder);
+        } else if(isZip(file)){
+            unzipExtract(file, destinationFolder);
+        } else {
+            sevenZipExtract(file, destinationFolder)
         }
     }
 }

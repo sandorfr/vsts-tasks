@@ -20,12 +20,12 @@
   "instanceNameFormat": "ms-resource:loc.instanceNameFormat",
   "inputs": [
     {
-      "name": "pattern",
-      "type": "string",
-      "label": "ms-resource:loc.input.label.pattern",
-      "defaultValue": "*.zip, *.tar",
+      "name": "archiveFilePatterns",
+      "type": "multiLine",
+      "label": "ms-resource:loc.input.label.archiveFilePatterns",
+      "defaultValue": "*.zip",
       "required": true,
-      "helpMarkDown": "ms-resource:loc.input.help.pattern"
+      "helpMarkDown": "ms-resource:loc.input.help.archiveFilePatterns"
     },
     {
       "name": "destinationFolder",
