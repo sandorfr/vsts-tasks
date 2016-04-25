@@ -3,17 +3,16 @@
 #
 function InvokePreBuildTask
 {
-    # TODO: read this from the task input and expose the new report 
-    $includeReport = $false
-    
     $serviceEndpoint = GetEndpointData $connectedServiceName
-    Write-Verbose "serverUrl = $($serviceEndpoint.Url)"
+    Write-Verbose "Server Url: $($serviceEndpoint.Url)"
 
     $currentDir = (Get-Item -Path ".\" -Verbose).FullName
     $bootstrapperDir = [System.IO.Path]::Combine($currentDir, "MSBuild.SonarQube.Runner-1.1") # the MSBuild.SonarQube.Runner is version specific
     $bootstrapperPath = [System.IO.Path]::Combine($bootstrapperDir, "MSBuild.SonarQube.Runner.exe")
-
-    StoreParametersInTaskContext $serviceEndpoint.Url $bootstrapperPath "$($serviceEndpoint.Url)/dashboard/index?id=$($projectKey)" $includeReport $breakBuild
+    $dashboardUrl = GetDashboardUrl $serviceEndpoint.Url $projectKey
+    Write-Verbose "Dashboard Url: $dashboardUrl"
+    
+    StoreParametersInTaskContext $serviceEndpoint.Url $bootstrapperPath $dashboardUrl $includeFullReport $breakBuild
     StoreSensitiveParametersInTaskContext $serviceEndpoint.Authorization.Parameters.UserName $serviceEndpoint.Authorization.Parameters.Password $dbUsername $dbPassword
 
     $cmdLineArgs = UpdateArgsForPullRequestAnalysis $cmdLineArgs $serviceEndpoint
@@ -33,14 +32,14 @@ function StoreParametersInTaskContext
 		  [string]$hostUrl,
 		  [string]$bootstrapperPath,
 		  [string]$dahsboardUrl,
-          [string]$includeReport, 
+          [string]$includeFullReport, 
           [string]$breakBuild)
 	
-    SetTaskContextVariable "MSBuild.SonarQube.BootstrapperPath" $bootstrapperPath    
-    SetTaskContextVariable "MSBuild.SonarQube.HostUrl" $hostUrl   
-    SetTaskContextVariable "MSBuild.SonarQube.BreakBuild" $breakBuild
-    SetTaskContextVariable "MSBuild.SonarQube.IncludeReport" $includeReport        
-    SetTaskContextVariable "MSBuild.SonarQube.ProjectUri" $dahsboardUrl
+    SetTaskContextVariable "MSBuild.SonarQube.Internal.BootstrapperPath" $bootstrapperPath    
+    SetTaskContextVariable "MSBuild.SonarQube.HostUrl" $hostUrl
+    SetTaskContextVariable "MSBuild.SonarQube.ProjectUri" $dahsboardUrl   
+    SetTaskContextVariable "MSBuild.SonarQube.Internal.BreakBuild" $breakBuild
+    SetTaskContextVariable "MSBuild.SonarQube.Internal.IncludeFullReport" $includeFullReport        
 }
 
 
@@ -181,4 +180,16 @@ function GetEndpointData
 	}
 
     return $serviceEndpoint
+}
+
+function GetDashboardUrl
+{
+    param ([Uri]$serviceEndpointUrl, [string]$projectKey)
+    
+    Write-Verbose $projectKey
+    Write-Verbose $serviceEndpointUrl
+    Write-Verbose $serviceEndpointUrl.ToString()
+    
+    $serviceUrlString = $serviceEndpointUrl.ToString().TrimEnd('/')
+    return "$serviceUrlString/dashboard/index?id=$($projectKey)"
 }
