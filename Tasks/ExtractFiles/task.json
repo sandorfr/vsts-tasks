@@ -16,7 +16,6 @@
     "Minor": "0",
     "Patch": "0"
   },
-  "minimumAgentVersion": "1.98.1",
   "instanceNameFormat": "Extract Files $(message)",
   "inputs": [
     {
@@ -47,11 +46,6 @@
     "Node": {
       "target": "extractFiles.js",
       "argumentFormat": ""
-    },
-    "PowerShell": {
-      "target": "$(currentDirectory)\\sample.ps1",
-      "argumentFormat": "",
-      "workingDirectory": "$(currentDirectory)"
     }
   }
 }
