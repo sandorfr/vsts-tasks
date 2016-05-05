@@ -1,0 +1,8 @@
+{
+    "archivePackages":[
+        {
+            "url":"https://vstsagenttools.blob.core.windows.net/tools/msbuildlogger/1/msbuildlogger.zip",
+            "dest":"./"
+        }
+    ]
+}
